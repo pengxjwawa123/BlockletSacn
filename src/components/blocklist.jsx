@@ -1,3 +1,4 @@
+import React from 'react';
 import Divider from './divider';
 
 const BlockDetailList = ({ className, title, content, suffix }) => {

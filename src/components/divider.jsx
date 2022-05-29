@@ -1,17 +1,5 @@
-// import React from 'react';
+import React from 'react';
 
-// const Divider = (props) => {
-//   const { color, bg, heightValue } = props;
-//   return (
-//     <hr
-//       style={{
-//         color: color,
-//         backgroundColor: bg,
-//         height: heightValue,
-//       }}
-//     />
-//   );
-// };
 export default Divider;
 
 function Divider(props) {
@@ -19,9 +7,9 @@ function Divider(props) {
   return (
     <hr
       style={{
-        color: color,
+        color,
         backgroundColor: bg,
-        height: height,
+        height,
       }}
     />
   );
