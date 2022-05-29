@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SearchIcon } from '@heroicons/react/outline';
 import dayjs from 'dayjs';
 import { Pagination } from 'antd';
@@ -10,26 +10,25 @@ import TransactionList from '../components/transactionList';
 const Home = () => {
   const ether = (wei) => wei / 100000000;
   const abbr = (str) => str?.slice(0, 12).toString() + '...' + str?.slice(-12).toString();
-  const [width, setWidth] = useState({ screenWidth: window.screen.width });
+
+  const [width, setWidth] = useState(document.documentElement.clientWidth);
   const [blockHash, setBlockHash] = useState('0000000000000000000667b13b344cf667551f5ccbb9c32bdb183bc1060181a0');
   const [block, setBlock] = useState([]);
   const [price, setPrice] = useState();
   const [value, setValue] = useState();
   const [totalCount, setTotalCount] = useState(0);
-  // const [totalFee, setTotalFee] = useState(0);
+  const [totalFee, setTotalFee] = useState(0);
   const [currentReward, setCurrentReward] = useState();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const handleResize = () => {
-    setWidth({ screenWidth: window.screen.width });
-  };
   const getBlockHashdetails = async () => {
     const response = await fetch(`https://blockchain.info/rawblock/${blockHash.toString()}`);
     const data = await response.json();
     setBlock([data]);
     // console.log(data);
   };
+
   const TransactionItem = () => {
     const transactionItem = [];
     const current = (page - 1) * pageSize;
@@ -39,6 +38,7 @@ const Home = () => {
     }
     return transactionItem;
   };
+
   const itemRender = (_, type, originalElement) => {
     if (type === 'prev') {
       return <button type="button">Previous</button>;
@@ -65,11 +65,11 @@ const Home = () => {
   useEffect(() => {
     getBlockHashdetails();
     getBTCPrices();
-  }, [block]);
+  }, [blockHash]);
 
-  // useEffect(() => {
-  //   setValue('');
-  // }, [block]);
+  useEffect(() => {
+    setValue('');
+  }, [block]);
 
   useEffect(() => {
     let outputs = 0;
@@ -81,19 +81,22 @@ const Home = () => {
     setTotalCount(outputs);
   }, [block]);
 
-  // useEffect(() => {
-  //   let totalFee = 0;
-  //   block[0]?.tx?.map((t, _) => {
-  //     totalFee += t?.fee;
-  //   });
-  //   setTotalFee(totalFee);
-  //   // console.log(totalFee);
-  // }, [block]);
+  useEffect(() => {
+    let totalFee = 0;
+    block[0]?.tx?.map((t, _) => {
+      totalFee += t?.fee;
+    });
+    setTotalFee(totalFee);
+  }, [block]);
+
+  const handleResize = useCallback(() => {
+    setWidth(document.documentElement.clientWidth);
+  });
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    return window.removeEventListener('resize', handleResize);
-  }, []);
+    const onResize = window.addEventListener('resize', handleResize);
+    return onResize;
+  }, [document.documentElement.clientWidth]);
 
   return (
     <div className="bg-base-100">

@@ -1,3 +1,5 @@
+import Divider from './divider';
+
 const BlockDetailList = ({ className, title, content, suffix }) => {
   return (
     <>
@@ -8,7 +10,7 @@ const BlockDetailList = ({ className, title, content, suffix }) => {
           {suffix}
         </span>
       </div>
-      <hr className="border-none h-[1px] bg-secondary" />
+      <Divider bg="#e894b1" height={1} />
     </>
   );
 };

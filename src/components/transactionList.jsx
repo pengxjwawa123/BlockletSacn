@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import Divider from './divider';
 
 const TransactionList = ({ tx, price }) => {
   let OUTPUT = 0;
@@ -65,8 +66,9 @@ const TransactionList = ({ tx, price }) => {
           </div>
         </div>
       </div>
-      <hr className="border-none h-[1px] bg-secondary" />
+      <Divider bg="#e894b1" height={1} />
     </>
   );
 };
+
 export default TransactionList;
