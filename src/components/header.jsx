@@ -3,7 +3,7 @@ import logo from '../logo.svg';
 
 const Header = () => {
   return (
-    <div className="">
+    <div>
       <header className="flex justify-between items-center m-auto px-2 max-w-screen-lg h-16 ">
         <div className="text-xl tracking-wider font-bold italic whitespace-nowrap">BlockletScan</div>
         <div className="text-xl tracking-wider font-bold italic whitespace-nowrap">NFT</div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SearchIcon } from '@heroicons/react/outline';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
 import { Pagination } from 'antd';
 import BlockDetailList from '../components/blockList';
 import Card from '../components/card';
@@ -10,23 +11,21 @@ import TransactionList from '../components/transactionList';
 const Home = () => {
   const ether = (wei) => wei / 100000000;
   const abbr = (str) => str?.slice(0, 12).toString() + '...' + str?.slice(-12).toString();
-
   const [width, setWidth] = useState(document.documentElement.clientWidth);
   const [blockHash, setBlockHash] = useState('0000000000000000000667b13b344cf667551f5ccbb9c32bdb183bc1060181a0');
   const [block, setBlock] = useState([]);
   const [price, setPrice] = useState();
   const [value, setValue] = useState();
   const [totalCount, setTotalCount] = useState(0);
-  const [totalFee, setTotalFee] = useState(0);
   const [currentReward, setCurrentReward] = useState();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const getBlockHashdetails = async () => {
-    const response = await fetch(`https://blockchain.info/rawblock/${blockHash.toString()}`);
-    const data = await response.json();
-    setBlock([data]);
-    // console.log(data);
+    await fetch(`https://blockchain.info/rawblock/${blockHash.toString()}`)
+      .then((resopnse) => resopnse.json())
+      .then((data) => setBlock([data]))
+      .catch((err) => console.error(err));
   };
 
   const TransactionItem = () => {
@@ -34,7 +33,7 @@ const Home = () => {
     const current = (page - 1) * pageSize;
     const target = page * pageSize;
     for (let i = current; i < target; i++) {
-      transactionItem.push(<TransactionList key={i} tx={block[0]?.tx[i]} price={price} />);
+      transactionItem.push(<TransactionList key={i} tx={block[0]?.tx[i]} price={price} width={width} />);
     }
     return transactionItem;
   };
@@ -51,9 +50,10 @@ const Home = () => {
   };
 
   const getBTCPrices = async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-    const data = await response.json();
-    setPrice(data.bitcoin);
+    await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+      .then((response) => response.json())
+      .then((data) => setPrice(data.bitcoin))
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {
@@ -68,8 +68,11 @@ const Home = () => {
   }, [blockHash]);
 
   useEffect(() => {
-    setValue('');
-  }, [block]);
+    const setTime = setTimeout(() => {
+      setValue('');
+    }, 500);
+    return () => clearTimeout(setTime);
+  }, [currentReward]);
 
   useEffect(() => {
     let outputs = 0;
@@ -81,33 +84,26 @@ const Home = () => {
     setTotalCount(outputs);
   }, [block]);
 
-  useEffect(() => {
-    let totalFee = 0;
-    block[0]?.tx?.map((t, _) => {
-      totalFee += t?.fee;
-    });
-    setTotalFee(totalFee);
-  }, [block]);
-
   const handleResize = useCallback(() => {
     setWidth(document.documentElement.clientWidth);
   });
 
   useEffect(() => {
-    const onResize = window.addEventListener('resize', handleResize);
-    return onResize;
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [document.documentElement.clientWidth]);
 
   return (
     <div className="bg-base-100">
       <section className="flex flex-col justify-between items-center m-auto p-2 max-w-screen-lg">
         <div className="text-3xl tracking-wider font-black  my-10">Explore Blockchain</div>
-        <div className="relative w-full max-w-xl p-3 rounded-lg shadow-md shadow-secondary bg-[#ebe0e4]">
+        <div className="relative w-full max-w-xl p-3 rounded-lg shadow-md  shadow-secondary bg-[#ebe0e4]">
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              setBlockHash(value);
+            onClick={() => {
+              if (value !== '') {
+                setBlockHash(value);
+              }
               // getBlockHashdetails();
               // getBTCPrices();
             }}
@@ -116,7 +112,7 @@ const Home = () => {
           </button>
           <input
             type="text"
-            pattern="^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$"
+            pattern="^([0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$"
             placeholder="Input explore blockchain"
             value={value}
             className="p-3 w-full rounded-md text-md outline-none"
@@ -130,7 +126,7 @@ const Home = () => {
       {/* <section className="flex flex-col justify-between items-center m-auto p-2 max-w-screen-md">{block}</section> */}
       {/* <section className="flex flex-col justify-between items-center m-auto p-2 max-w-screen-md">{txhash}</section> */}
       <section className="flex flex-col justify-between items-center m-auto p-2 max-w-screen-lg gap-y-4 mt-5">
-        {blockHash !== undefined ? (
+        {blockHash !== '' ? (
           <Card className="text-md opacity-90">
             <h1 className="text-lg font-bold">Block {block[0]?.height?.toString()}</h1>
             <p>
@@ -161,10 +157,10 @@ const Home = () => {
             <p className="text-lg opacity-60 text-secondary text-center">Please input Blockchain</p>
           </Card>
         )}
-        {blockHash !== undefined ? (
+        {blockHash !== '' ? (
           <Card>
             {width >= 800 ? (
-              <BlockDetailList title="Hash" content={block[0]?.hash.toString()} />
+              <BlockDetailList title="Hash" content={block[0]?.hash} />
             ) : (
               <BlockDetailList title="Hash" content={abbr(block[0]?.hash)} />
             )}
@@ -193,7 +189,7 @@ const Home = () => {
             <p className="text-lg opacity-60 text-secondary text-center">Please input Blockchain</p>
           </Card>
         )}
-        {blockHash !== undefined ? (
+        {blockHash !== '' ? (
           <Card>
             <h1 className="text-lg font-bold">Block Transactions</h1>
             <TransactionItem />

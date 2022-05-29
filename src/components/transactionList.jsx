@@ -2,16 +2,18 @@ import React from 'react';
 import dayjs from 'dayjs';
 import Divider from './divider';
 
-const TransactionList = ({ tx, price }) => {
+const TransactionList = ({ tx, price, ...props }) => {
   let OUTPUT = 0;
   const ether = (wei) => wei / 100000000;
 
   return (
     <>
       <div>
-        <div className="md:flex justify-between items-center">
-          <div className="font-bold text-sm py-2">Hash</div>
-          <div className="text-sm opacity-80">{tx?.hash.slice(0, 16) + '...' + tx?.hash.slice(-16)}</div>
+        <div className="md:flex justify-between items-center tracking-wider">
+          <div className="font-bold text-sm my-2 p-[2px] rounded-sm bg-secondary">Hash</div>
+          <div className="text-sm opacity-80">
+            {props.width <= 800 ? tx?.hash.slice(0, 16) + '...' + tx?.hash.slice(-16) : tx?.hash}
+          </div>
           <div className="text-sm opacity-80">{dayjs.unix(tx?.time).toString()}</div>
         </div>
         <div className="md:flex justify-between py-2">
@@ -25,7 +27,7 @@ const TransactionList = ({ tx, price }) => {
                     : input?.prev_out?.n + ''}
                 </div>
                 <div>
-                  {ether(input?.prev_out?.value) + ' ' + 'BTC'} ($
+                  ({ether(input?.prev_out?.value) + ' ' + 'BTC'}) ($
                   {(ether(input?.prev_out?.value) * price?.usd).toFixed(2) / 1})
                 </div>
               </div>
@@ -41,7 +43,7 @@ const TransactionList = ({ tx, price }) => {
                     : output?.n + ' '}
                 </div>
                 <div>
-                  {ether(output?.value) + ' ' + 'BTC'} (${(ether(output?.value) * price?.usd).toFixed(2) / 1})
+                  ({ether(output?.value) + ' ' + 'BTC'}) (${(ether(output?.value) * price?.usd).toFixed(2) / 1})
                 </div>
               </div>
             ))}
@@ -50,7 +52,7 @@ const TransactionList = ({ tx, price }) => {
         <div>
           <div className="font-bold text-sm tracking-wide py-2">Fee</div>
           <div className="text-sm opacity-80 md:flex justify-between">
-            {ether(tx?.fee) + ' ' + 'BTC'} ($
+            ({ether(tx?.fee) + ' ' + 'BTC'}) ($
             {(ether(tx?.fee) * price?.usd).toFixed(2) / 1})
           </div>
         </div>
@@ -61,7 +63,7 @@ const TransactionList = ({ tx, price }) => {
               OUTPUT = OUTPUT + output?.value;
             })}
             <div>
-              {ether(OUTPUT) + ' ' + 'BTC'} (${(ether(OUTPUT) * price?.usd).toFixed(2) / 1})
+              ({ether(OUTPUT) + ' ' + 'BTC'}) (${(ether(OUTPUT) * price?.usd).toFixed(2) / 1})
             </div>
           </div>
         </div>
