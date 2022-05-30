@@ -28,7 +28,7 @@ BlockDetailList.defaultProps = {
 BlockDetailList.propTypes = {
   className: propTypes.oneOfType([propTypes.string, propTypes.number, propTypes.object]),
   title: propTypes.string,
-  content: propTypes.string,
+  content: propTypes.oneOfType([propTypes.string, propTypes.number]),
   suffix: propTypes.string,
 };
 
