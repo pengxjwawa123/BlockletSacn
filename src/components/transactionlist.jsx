@@ -59,8 +59,8 @@ const TransactionList = ({ tx, price, ...props }) => {
         <div>
           <div className="font-bold text-sm tracking-wide py-2">Total</div>
           <div className="text-sm opacity-80 md:flex justify-between">
-            {tx?.out?.map((output, idx) => {
-              OUTPUT = OUTPUT + output?.value;
+            {tx?.out?.forEach((output) => {
+              OUTPUT += output?.value;
             })}
             <div>
               ({ether(OUTPUT) + ' ' + 'BTC'}) (${(ether(OUTPUT) * price?.usd).toFixed(2) / 1})

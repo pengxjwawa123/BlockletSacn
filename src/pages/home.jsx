@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SearchIcon } from '@heroicons/react/outline';
 import dayjs from 'dayjs';
 import { Pagination } from 'antd';
-import BlockDetailList from '../components/blockList';
+import BlockDetailList from '../components/blocklist';
 import Card from '../components/card';
-import TransactionList from '../components/transactionList';
+import TransactionList from '../components/transactionlist';
 import Header from '../components/header';
 import Footer from '../components/footer';
 

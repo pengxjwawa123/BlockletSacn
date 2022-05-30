@@ -1,5 +1,5 @@
 import React from 'react';
-import TransactionList from './transactionlist';
+import TransactionList from './transactionList';
 
 const TransactionItem = ({ tx, price }) => {
   return (
